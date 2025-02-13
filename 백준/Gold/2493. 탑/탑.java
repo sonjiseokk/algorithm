@@ -17,31 +17,13 @@ public class Main {
         int[] result = new int[n];
         Stack<Node> stack = new Stack<>();
         for (int i = 0; i< n ; i++){
-            // 아무것도 없으면 추가
-            if (stack.isEmpty()){
-                stack.add(new Node(towers[i],i));
-                continue;
-            }
-            
-            // 작은수가 들어옴
-            if(stack.peek().num > towers[i]){
-                result[i] = stack.peek().index + 1;
-                stack.add(new Node(towers[i], i));
-                continue;
-            }
-            
-            // 큰수가 들어옴
             while (!stack.isEmpty() && stack.peek().num < towers[i]){
                 stack.pop();   
             }
             
-
-            if (stack.size() < 1){
-                result[i] = 0;
-            } else{
-                result[i] = stack.peek().index+1;
-            }
-            stack.add(new Node(towers[i],i));
+            result[i] = stack.isEmpty() ? 0 : stack.peek().index + 1;
+            
+            stack.push(new Node(towers[i],i));
         }
         
         StringBuilder sb = new StringBuilder();
