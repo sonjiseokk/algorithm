@@ -2,73 +2,58 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    // 좌우상하 좌상우상좌하우하
-    private static int[] dx = {-1,1,0,0, -1,1,-1,1};
-    private static int[] dy = {0,0,-1,1, -1,-1,1,1};
+    // 상하좌우 좌상우상좌하우하
+    static int[] dx = {0,0,-1,1,-1,1,-1,1};
+    static int[] dy = {-1,1,0,0,-1,-1,1,1};
+    static boolean[][] visited;
     public static void main(String[] args) throws Exception{
-        // 코드를 작성해주세요
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
         
         while (true){
             StringTokenizer st = new StringTokenizer(br.readLine());
-            
             int m = Integer.parseInt(st.nextToken());
             int n = Integer.parseInt(st.nextToken());
-
             if (n == 0 && m == 0) break;
             
-            int[][] map = new int[n][m];
-            for (int i = 0; i<n; i++) {
+            int[][] board = new int[n][m];
+            for (int i = 0; i <n; i++){
                 st = new StringTokenizer(br.readLine());
-                for (int j=0; j<m; j++){
-                    map[i][j] = Integer.parseInt(st.nextToken());
+                for (int j = 0; j<m; j++){
+                    board[i][j] = Integer.parseInt(st.nextToken());
                 }
             }
             
-            int result = 0;
-            for (int i = 0; i<n; i++) {
-                for (int j=0; j<m; j++){
-                    result += logic(map,n,m,i,j);
+            visited = new boolean[n][m];
+            int cnt = 0;
+            for (int i = 0; i < n; i ++){
+                for (int j = 0; j<m; j++){
+                    if (!visited[i][j] && board[i][j] == 1){
+                        cnt ++;
+                        dfs(board, n, m, i, j);
+                    }
                 }
             }
+            
+            System.out.println(cnt);
+        }
 
-            System.out.println(result);
-        }
     }
     
-    private static int logic(int[][] map, int n, int m, int sy, int sx){
-        if (map[sy][sx] == 0) return 0;
+    static void dfs(int[][] board, int n, int m, int y, int x){
+        visited[y][x] = true;
+        board[y][x] = 0;
         
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(new Node(sx,sy));
-        map[sy][sx] = 0;
-        
-        while (!queue.isEmpty()){
-            Node now = queue.poll();
+        // 4방향 탐색
+        for (int d = 0; d < 8; d++){
+            int nx = x + dx[d];
+            int ny = y + dy[d];
+            if (nx < 0 || ny < 0 || nx >= m || ny >= n) continue;
             
-            for (int i=0; i<8; i++){
-                int nx = now.x + dx[i];
-                int ny = now.y + dy[i];
-                
-                if (nx < 0 || ny <0 || nx >= m || ny >= n) continue;
-                if (map[ny][nx] == 0) continue;
-                
-                map[ny][nx] = 0;
-                queue.add(new Node(nx,ny));
-            }
-        }
-        
-        return 1;
-        
-    }
-    
-    static class Node {
-        int x;
-        int y;
-        
-        public Node(int x, int y){
-            this.x = x;
-            this.y = y;
+            if (visited[ny][nx] || board[ny][nx] != 1) continue;
+            visited[ny][nx] = true;
+            board[ny][nx] = 0;
+            dfs(board, n, m, ny, nx);
         }
     }
 }
